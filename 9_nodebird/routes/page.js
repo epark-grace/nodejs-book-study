@@ -18,6 +18,11 @@ router.get('/profile', isLoggedIn, (req, res) => {
     });
 });
 
+router.get('/user-form', isLoggedIn, (req, res) => {
+    res.render('user-form', {
+        title: '회원 정보 변경 - NodeBird'
+    });
+});
 router.get('/join', isNotLoggedIn, (req, res) => {
     res.render('join', {
         title: '회원가입 - NodeBird'

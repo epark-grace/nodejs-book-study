@@ -23,6 +23,7 @@
       </div>
       <input id="my-id" type="hidden" value="{{user.id}}">
       <a id="my-profile" href="/profile" class="btn">내 프로필</a>
+      <a id="user-form" href="/user-form" class="btn">정보 변경</a>
       <a id="logout" href="/auth/logout" class="btn">로그아웃</a>
       {% else %}
       <form id="login-form" action="/auth/login" method="post">

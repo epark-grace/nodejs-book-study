@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="timeline">
+  <div class="input-group">
+    <label for="nick">닉네임</label>
+    <input type="text" id="nick">
+  </div>
+  <div class="input-group">
+    <label for="password">비밀번호</label>
+    <input type="password" id="password">
+  </div>
+  <button id="save" class="btn">저장</button>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    document.getElementById('save').addEventListener('click', async () => {
+        const id = document.getElementById('my-id').value;
+        const nick = document.getElementById('nick').value;
+        const password = document.getElementById('password').value;
+        try {
+            const result = await axios.patch(`/user/${id}`, { nick, password });
+            if (result.data === 'success') {
+                location.href = '/';
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    });
+</script>
+{% endblock %}
