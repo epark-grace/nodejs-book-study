@@ -32,9 +32,9 @@
       <div class="twit-author">{{twit.User.nick}}</div>
       {% if twit.User.id !== user.id %}
       {% if followingIdList.includes(twit.User.id) %}
-      <button class="twit-unfollow">언팔로우하기</button>
+      <button class="twit-unfollow" data-feature="unfollow">언팔로우하기</button>
       {% else %}
-      <button class="twit-follow">팔로우하기</button>
+      <button class="twit-follow" data-feature="follow">팔로우하기</button>
       {% endif %}
       {% endif %}
       <div class="twit-content">{{twit.content}}</div>
@@ -66,44 +66,36 @@
         });
     }
 
-    document.querySelectorAll('.twit-unfollow').forEach(function (tag) {
-        tag.addEventListener('click', function () {
-            const myId = document.querySelector('#my-id');
-            if (myId) {
-                const followingId = tag.parentNode.querySelector('.twit-user-id').value;
-                if (followingId !== myId.value) {
-                    if (confirm('언팔로우하시겠습니까?')) {
-                        axios.delete(`/user/${myId}/followings/${followingId}`)
-                            .then(() => {
-                                location.reload();
-                            })
-                            .catch((err) => {
-                                console.error(err);
-                            });
-                    }
-                }
-            }
-        });
-    });
+    document.addEventListener('click', (event) => {
+        const targetElement = event.target;
+        const feature = targetElement.dataset.feature;
+        if (!feature) return;
 
-    document.querySelectorAll('.twit-follow').forEach(function (tag) {
-        tag.addEventListener('click', function () {
-            const myId = document.querySelector('#my-id');
-            if (myId) {
-                const followingId = tag.parentNode.querySelector('.twit-user-id').value;
-                if (followingId !== myId.value) {
-                    if (confirm('팔로우하시겠습니까?')) {
-                        axios.post(`/user/${myId}/followings/${followingId}`)
-                            .then(() => {
-                                location.reload();
-                            })
-                            .catch((err) => {
-                                console.error(err);
-                            });
-                    }
-                }
+        const userId = document.getElementById('my-id').value;
+        const followId = targetElement.parentElement.getElementsByClassName('twit-user-id').value;
+        if (followId === userId) return;
+
+        if (feature === 'follow') {
+            if (confirm('팔로우하시겠습니까?')) {
+                axios.post(`/user/${userId}/followings/${followId}`)
+                    .then(() => {
+                        location.reload();
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                    });
             }
-        });
+        } else if (feature === 'unfollow') {
+            if (confirm('언팔로우하시겠습니까?')) {
+                axios.delete(`/user/${userId}/followings/${followId}`)
+                    .then(() => {
+                        location.reload();
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                    });
+            }
+        }
     });
 </script>
 {% endblock %}
