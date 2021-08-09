@@ -10,7 +10,7 @@
 <body>
 <div class="container">
   <div class="profile-wrap">
-    <div class="profile">
+    <div class="profile" data-user-id="{{user.id}}">
       {% if user and user.id %}
       <div class="user-name">{{'안녕하세요! ' + user.nick + '님'}}</div>
       <div class="half">
@@ -21,7 +21,6 @@
         <div>팔로워</div>
         <div class="count follower-count">{{followerCount}}</div>
       </div>
-      <input id="my-id" type="hidden" value="{{user.id}}">
       <a id="my-profile" href="/profile" class="btn">내 프로필</a>
       <a id="user-form" href="/user-form" class="btn">정보 변경</a>
       <a id="logout" href="/auth/logout" class="btn">로그아웃</a>

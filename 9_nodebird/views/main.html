@@ -26,9 +26,7 @@
       <button class="btn">검색</button>
     </form>
     {% for twit in twits %}
-    <div class="twit">
-      <input type="hidden" value="{{twit.User.id}}" class="twit-user-id">
-      <input type="hidden" value="{{twit.id}}" class="twit-id">
+    <div class="twit" data-twit-user-id="{{twit.User.id}}" data-twit-id="{{twit.id}}">
       <div class="twit-author">{{twit.User.nick}}</div>
       {% if twit.User.id !== user.id %}
       {% if followingIdList.includes(twit.User.id) %}
@@ -71,8 +69,8 @@
         const feature = targetElement.dataset.feature;
         if (!feature) return;
 
-        const userId = document.getElementById('my-id').value;
-        const followId = targetElement.parentElement.getElementsByClassName('twit-user-id').value;
+        const userId = document.getElementsByClassName('profile')[0].dataset.userId;
+        const followId = targetElement.parentElement.dataset.twitUserId;
         if (followId === userId) return;
 
         if (feature === 'follow') {

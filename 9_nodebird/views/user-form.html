@@ -17,11 +17,11 @@
 {% block script %}
 <script>
     document.getElementById('save').addEventListener('click', async () => {
-        const id = document.getElementById('my-id').value;
+        const userId = document.getElementsByClassName('profile')[0].dataset.userId;
         const nick = document.getElementById('nick').value;
         const password = document.getElementById('password').value;
         try {
-            const result = await axios.patch(`/user/${id}`, { nick, password });
+            const result = await axios.patch(`/user/${userId}`, { nick, password });
             if (result.data === 'success') {
                 location.href = '/';
             }
