@@ -1,6 +1,12 @@
 const express = require('express');
+const { Sequelize } = require("sequelize");
 const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
-const { Post, User, Hashtag } = require('../models');
+const {
+    sequelize: { models: { like } },
+    Post,
+    User,
+    Hashtag
+} = require('../models');
 
 const router = express.Router();
 
@@ -31,17 +37,42 @@ router.get('/join', isNotLoggedIn, (req, res) => {
 
 router.get('/', async (req, res, next) => {
     try {
-        const twits = await Post.findAll({
-            include: {
-                model: User,
-                attributes: ['id', 'nick']
+        let twits = await Post.findAll({
+            attributes: {
+                exclude: ['userId'],
+                include: [
+                    [Sequelize.fn('COUNT', Sequelize.col('reactionUsers.id')), 'likeCount'],
+                ]
             },
-            order: [['createdAt', 'DESC']]
+            include: [{
+                model: User,
+                as: 'User',
+                attributes: ['id', 'nick']
+            }, {
+                model: User,
+                as: 'ReactionUsers',
+                attributes: [],
+                through: { attributes: [] },
+            }],
+            group: 'Post.id',
+            order: [['createdAt', 'DESC']],
+            raw: true,
+            nest: true
         });
+
+        let likedPosts = [];
+
+        if (req.isAuthenticated()) {
+            const likes = await like.findAll(
+                { where: { userId: req.user.id } },
+                { attributes: ['postId'] });
+            likedPosts = likes.map(like => like.postId);
+        }
 
         res.render('main', {
             title: 'NodeBird',
-            twits
+            twits,
+            likedPosts
         });
     } catch (err) {
         console.error(err);

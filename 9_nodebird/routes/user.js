@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 
 const { isLoggedIn } = require('./middlewares');
-const User = require('../models/user');
+const { User, sequelize: { models: { like } } } = require('../models');
 
 const router = express.Router();
 
@@ -58,6 +58,42 @@ router.post('/:userId/followings/:followingId/', isLoggedIn, async (req, res, ne
             res.send('success');
         } else {
             res.status(404).send('no user');
+        }
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+});
+
+router.put('/:userId/likes/:postId', isLoggedIn, async (req, res, next) => {
+    try {
+        const user = await User.findByPk(req.user.id);
+
+        if (user) {
+            const postId = req.body.postId;
+            await user.addLikedPost(parseInt(req.body.postId, 10));
+            const likeCount = await like.count({ where: { postId } })
+            res.status(201).json({ likeCount });
+        } else {
+            res.status(404).send('no such user');
+        }
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+});
+
+router.delete('/:userId/likes/:postId', isLoggedIn, async (req, res, next) => {
+    try {
+        const user = await User.findByPk(req.user.id);
+
+        if (user) {
+            const postId = req.params.postId;
+            await user.removeLikedPost(parseInt(req.params.postId, 10));
+            const likeCount = await like.count({ where: { postId } });
+            res.status(200).json({ likeCount });
+        } else {
+            res.status(404).send('no such user');
         }
     } catch (err) {
         console.error(err);
