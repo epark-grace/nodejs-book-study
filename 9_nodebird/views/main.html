@@ -48,6 +48,10 @@
       {% else %}
       <button data-feature="like" class="btn">좋아요</button>
       {% endif %}
+
+      {% if twit.User.id === user.id %}
+      <button data-feature="delete" class="btn">삭제</button>
+      {% endif %}
     </div>
     {% endfor %}
   </div>
@@ -79,10 +83,11 @@
         if (!feature) return;
 
         const userId = document.getElementsByClassName('profile')[0].dataset.userId;
-        const followId = targetElement.parentElement.dataset.twitUserId;
-        if (followId === userId) return;
 
         if (feature === 'follow') {
+            const followId = targetElement.parentElement.dataset.twitUserId;
+            if (followId === userId) return;
+
             if (confirm('팔로우하시겠습니까?')) {
                 axios.post(`/user/${userId}/followings/${followId}`)
                     .then(() => {
@@ -93,6 +98,9 @@
                     });
             }
         } else if (feature === 'unfollow') {
+            const followId = targetElement.parentElement.dataset.twitUserId;
+            if (followId === userId) return;
+
             if (confirm('언팔로우하시겠습니까?')) {
                 axios.delete(`/user/${userId}/followings/${followId}`)
                     .then(() => {
@@ -128,6 +136,18 @@
                 targetElement.previousElementSibling.textContent = result.data.likeCount;
                 targetElement.dataset.feature = 'like';
                 targetElement.textContent = '좋아요';
+            }
+        } else if (feature === 'delete') {
+            console.log('됨?');
+            if (confirm('삭제하시겠습니까?')) {
+                const postId = targetElement.parentElement.dataset.twitId;
+                const uri = `/post/${postId}`;
+                const result = await axios.delete(uri);
+
+                if (result.status === 200) {
+                    alert('삭제되었습니다.');
+                    location.reload();
+                }
             }
         }
     });

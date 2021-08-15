@@ -3,8 +3,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const {Post, Hashtag} = require('../models');
-const {isLoggedIn} = require('./middlewares');
+const { Post, Hashtag, User } = require('../models');
+const { isLoggedIn } = require('./middlewares');
 
 const router = express.Router();
 
@@ -51,7 +51,7 @@ router.post('/', isLoggedIn, upload2.none(), async (req, res, next) => {
             const result = await Promise.all(
                 hashtags.map(tag => {
                     return Hashtag.findOrCreate({
-                        where: {title: tag.slice(1).toLowerCase()}
+                        where: { title: tag.slice(1).toLowerCase() }
                     });
                 })
             );
@@ -59,6 +59,20 @@ router.post('/', isLoggedIn, upload2.none(), async (req, res, next) => {
         }
 
         res.redirect('/');
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+});
+
+router.delete('/:postId', async (req, res, next) => {
+    try {
+        const post = await Post.findByPk(req.params.postId);
+
+        if (post && req.user.id === post.get('userId')) {
+            await post.destroy();
+            res.status(200).send('success');
+        }
     } catch (err) {
         console.error(err);
         next(err);
