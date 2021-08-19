@@ -1,5 +1,5 @@
 const express = require('express');
-const { Sequelize } = require("sequelize");
+const { Sequelize } = require('sequelize');
 const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
 const {
     sequelize: { models: { like } },
@@ -41,7 +41,7 @@ router.get('/', async (req, res, next) => {
             attributes: {
                 exclude: ['userId'],
                 include: [
-                    [Sequelize.fn('COUNT', Sequelize.col('reactionUsers.id')), 'likeCount'],
+                    [Sequelize.fn('COUNT', Sequelize.col('reactionUsers.id')), 'likeCount']
                 ]
             },
             include: [{
@@ -52,7 +52,7 @@ router.get('/', async (req, res, next) => {
                 model: User,
                 as: 'ReactionUsers',
                 attributes: [],
-                through: { attributes: [] },
+                through: { attributes: [] }
             }],
             group: 'Post.id',
             order: [['createdAt', 'DESC']],
@@ -92,13 +92,39 @@ router.get('/hashtag', async (req, res, next) => {
         });
         let twits = [];
         if (hashtag) {
-            twits = await hashtag.getPosts({ include: [{ model: User }] });
-        }
+            twits = await hashtag.getPosts({
+                include: [{
+                    model: User,
+                    as: 'User',
+                    attributes: ['id', 'nick']
+                }, {
+                    model: User,
+                    as: 'ReactionUsers',
+                    attributes: [],
+                    through: { attributes: [] }
+                }],
+                group: 'Post.id',
+                order: [['createdAt', 'DESC']],
+                raw: true,
+                nest: true
+            });
 
-        return res.render('main', {
-            title: `${query} | NodeBird`,
-            twits
-        });
+            let likedPosts = [];
+
+            if (req.isAuthenticated()) {
+                const likes = await like.findAll(
+                    { where: { userId: req.user.id } },
+                    { attributes: ['postId'] });
+                likedPosts = likes.map(like => like.postId);
+            }
+            
+            return res.render('main', {
+                title: `${query} | NodeBird`,
+                twits,
+                likedPosts
+            });
+
+        }
     } catch (err) {
         console.error(err);
         next(err);

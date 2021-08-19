@@ -6,7 +6,7 @@ const Post = require('./post');
 const Hashtag = require('./hashtag');
 
 const db = {};
-const sequelize = new Sequelize(config.database, config.username, config.password, config);
+const sequelize = new Sequelize(config);
 
 db.sequelize = sequelize;
 db.User = User;
