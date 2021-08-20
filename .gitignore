@@ -119,6 +119,7 @@ dist
 
 # config
 config.json
+config.js
 loadtest.json
 
 ### JetBrains template
@@ -128,4 +129,4 @@ loadtest.json
 *.iml
 
 # upload file
-uploads/*
+uploads
