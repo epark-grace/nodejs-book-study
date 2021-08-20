@@ -119,7 +119,6 @@ dist
 
 # config
 config.json
-config.js
 loadtest.json
 
 ### JetBrains template
