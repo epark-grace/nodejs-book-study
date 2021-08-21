@@ -4,29 +4,29 @@
 <div class="timeline">
   {% if user %}
   <div>
-    <form id="twit-form" action="/post" method="post" enctype="multipart/form-data">
+    <form action="/post" enctype="multipart/form-data" id="twit-form" method="post">
       <div class="input-group">
-        <textarea id="twit" name="content" maxlength="140"></textarea>
+        <textarea id="twit" maxlength="140" name="content"></textarea>
       </div>
       <div class="img-preview">
-        <img id="img-preview" src="" style="display: none;" width="250" alt="미리보기">
-        <input id="img-url" type="hidden" name="url">
+        <img alt="미리보기" id="img-preview" src="" style="display: none;" width="250">
+        <input id="img-url" name="url" type="hidden">
       </div>
       <div>
-        <label id="img-label" for="img">사진 업로드</label>
-        <input id="img" type="file" accept="image/*">
-        <button id="twit-btn" type="submit" class="btn">짹짹</button>
+        <label for="img" id="img-label">사진 업로드</label>
+        <input accept="image/*" id="img" type="file">
+        <button class="btn" id="twit-btn" type="submit">짹짹</button>
       </div>
     </form>
   </div>
   {% endif %}
   <div class="twits">
-    <form id="hashtag-form" action="/hashtag">
-      <input type="text" name="hashtag" placeholder="태그 검색">
+    <form action="/hashtag" id="hashtag-form">
+      <input name="hashtag" placeholder="태그 검색" type="text">
       <button class="btn">검색</button>
     </form>
     {% for twit in twits %}
-    <div class="twit" data-twit-user-id="{{twit.User.id}}" data-twit-id="{{twit.id}}">
+    <div class="twit" data-twit-id="{{twit.id}}" data-twit-user-id="{{twit.User.id}}">
       <div class="twit-author">{{twit.User.nick}}</div>
       {% if twit.User.id !== user.id %}
       {% if followingIdList.includes(twit.User.id) %}
@@ -39,18 +39,18 @@
       <div class="twit-content">{{twit.content}}</div>
 
       {% if twit.img %}
-      <div class="twit-img"><img src="{{twit.img}}" alt="섬네일"></div>
+      <div class="twit-img"><img alt="섬네일" src="{{twit.img}}"></div>
       {% endif %}
 
       <span>{{twit.likeCount}}</span>
       {% if likedPosts.includes(twit.id) %}
-      <button data-feature="unlike" class="btn">좋아요 취소</button>
+      <button class="btn" data-feature="unlike">좋아요 취소</button>
       {% else %}
-      <button data-feature="like" class="btn">좋아요</button>
+      <button class="btn" data-feature="like">좋아요</button>
       {% endif %}
 
       {% if twit.User.id === user.id %}
-      <button data-feature="delete" class="btn">삭제</button>
+      <button class="btn" data-feature="delete">삭제</button>
       {% endif %}
     </div>
     {% endfor %}
@@ -117,10 +117,10 @@
 
             try {
                 switch (feature) {
-                    case "like":
+                    case 'like':
                         result = await axios.put(uri, { postId });
                         break;
-                    case "unlike":
+                    case 'unlike':
                         result = await axios.delete(uri);
                         break;
                 }
@@ -138,7 +138,6 @@
                 targetElement.textContent = '좋아요';
             }
         } else if (feature === 'delete') {
-            console.log('됨?');
             if (confirm('삭제하시겠습니까?')) {
                 const postId = targetElement.parentElement.dataset.twitId;
                 const uri = `/post/${postId}`;
