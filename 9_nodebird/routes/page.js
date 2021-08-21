@@ -41,7 +41,7 @@ router.get('/', async (req, res, next) => {
             attributes: {
                 exclude: ['userId'],
                 include: [
-                    [Sequelize.fn('COUNT', Sequelize.col('reactionUsers.id')), 'likeCount']
+                    [Sequelize.fn('COUNT', Sequelize.col('ReactionUsers.id')), 'likeCount']
                 ]
             },
             include: [{
