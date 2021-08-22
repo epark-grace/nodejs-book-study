@@ -8,8 +8,8 @@ module.exports = () => {
 
     passport.serializeUser((user, done) => done(null, user.id));
     passport.deserializeUser((id, done) => {
-        if (cache.id) {
-            done(null, cache.id);
+        if (cache[id] && cache[id].expiresAt > Date.now()) {
+            done(null, cache[id].info);
         } else {
             User.findOne({
                 where: { id },
@@ -24,7 +24,10 @@ module.exports = () => {
                     as: 'Followings'
                 }]
             }).then(user => {
-                cache.id = user;
+                cache[user.id] = {
+                    expiresAt: Date.now() + (1000 * 60),
+                    info: user
+                };
                 done(null, user);
             }).catch(err => done(err));
         }
