@@ -2,8 +2,10 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const AWS = require('aws-sdk');
+const multerS3 = require('multer-s3');
 
-const { Post, Hashtag, User } = require('../models');
+const { Post, Hashtag } = require('../models');
 const { isLoggedIn } = require('./middlewares');
 
 const router = express.Router();
@@ -15,14 +17,18 @@ try {
     fs.mkdirSync('uploads');
 }
 
+AWS.config.update({
+    accessKeyId: process.env.S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+    region: 'ap-northeast-2'
+});
+
 const upload = multer({
-    storage: multer.diskStorage({
-        destination(req, file, cb) {
-            cb(null, 'uploads/');
-        },
-        filename(req, file, cb) {
-            const ext = path.extname(file.originalname);
-            cb(null, path.basename(file.originalname, ext) + Date.now() + ext);
+    storage: multerS3({
+        s3: new AWS.S3(),
+        bucket: 'nodebird-bucket',
+        key(req, file, cb) {
+            cb(null, `original/${Date.now()}${path.basename(file.originalname)}`);
         }
     }),
     limits: {
@@ -33,7 +39,7 @@ const upload = multer({
 router.post('/img', isLoggedIn, upload.single('img'), (req, res) => {
     console.log(req.file);
     res.json({
-        url: `/img/${req.file.filename}`
+        url: `${req.file.location}`
     });
 });
 

@@ -1,0 +1,13 @@
+{
+  "name": "aws-upload",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "author": "E.Park",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.973.0",
+    "sharp": "^0.29.0"
+  }
+}
