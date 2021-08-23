@@ -39,7 +39,9 @@
       <div class="twit-content">{{twit.content}}</div>
 
       {% if twit.img %}
-      <div class="twit-img"><img alt="섬네일" src="{{twit.img}}"></div>
+      <div class="twit-img">
+        <img alt="섬네일" onerror="this.src = this.src.replace(/\/thumb\//, '/original/');" src="{{twit.img}}"/>
+      </div>
       {% endif %}
 
       <span>{{twit.likeCount}}</span>
@@ -68,7 +70,7 @@
             axios.post('/post/img', formData)
                 .then((res) => {
                     document.getElementById('img-url').value = res.data.url;
-                    document.getElementById('img-preview').src = res.data.url;
+                    document.getElementById('img-preview').src = res.data.originalUrl;
                     document.getElementById('img-preview').style.display = 'inline';
                 })
                 .catch((err) => {
